@@ -23,7 +23,14 @@ public class Driver {
         
     	Network objNetwork = new Network("network");            /* Activate the network */
         objNetwork.start();
-        Server objServer = new Server();        
+        Server objServer = new Server();
+        objServer.start();
+        Client sendingClient = new Client("sending");
+        sendingClient.start();
+        //Initialize Receiving Client
+        Client receivingClient = new Client("receiving");
+        receivingClient.start();
+
         /* Complete here the code for the main method ...*/
     }
 }

@@ -15,7 +15,7 @@ import java.util.InputMismatchException;
  * @author Kerly Titus
  */
 
-public class Client { 
+public class Client extends Thread{ 
     
     private static int numberOfTransactions;   		/* Number of transactions to process */
     private static int maxNbTransactions;      		/* Maximum number of transactions */
@@ -54,6 +54,8 @@ public class Client {
     		   clientOperation = operation; 
            }
      }
+     
+
            
     /** 
      * Accessor method of Client class
@@ -157,7 +159,10 @@ public class Client {
          
          while (i < getNumberOfTransactions())
          {  
-            // while( objNetwork.getInBufferStatus().equals("full") );     /* Alternatively, busy-wait until the network input buffer is available */
+            while( objNetwork.getInBufferStatus().equals("full") ) {     /* Alternatively, busy-wait until the network input buffer is available */
+            	Thread.yield();
+            }
+
                                              	
             transaction[i].setTransactionStatus("sent");   /* Set current transaction status */
            
@@ -177,12 +182,16 @@ public class Client {
      */
      public void receiveTransactions(Transactions transact)
      {
+
          int i = 0;     /* Index of transaction array */
          
          while (i < getNumberOfTransactions())
          {     
-        	 // while( objNetwork.getOutBufferStatus().equals("empty"));  	/* Alternatively, busy-wait until the network output buffer is available */
-                                                                        	
+        	 while( objNetwork.getOutBufferStatus().equals("empty")) { 	/* Alternatively, busy-wait until the network output buffer is available */
+                 Thread.yield();
+
+        	 }  	
+
             objNetwork.receive(transact);                               	/* Receive updated transaction from the network buffer */
             
             System.out.println("\n DEBUG : Client.receiveTransactions() - receiving updated transaction on account " + transact.getAccountNumber());
@@ -210,9 +219,27 @@ public class Client {
      */
     public void run()
     {   
-    	Transactions transact = new Transactions();
     	long sendClientStartTime, sendClientEndTime, receiveClientStartTime, receiveClientEndTime;
-    
+        if (clientOperation.equals("sending")) {
+        System.out.println("\n DEBUG : Client.run() - starting send client thread " + objNetwork.getServerConnectionStatus());
+
+        
+    	sendClientStartTime = System.currentTimeMillis();
+    	sendTransactions();
+    	sendClientEndTime = System.currentTimeMillis();
+        System.out.println("\n Terminating Client Send thread - " + " Running time " + (sendClientEndTime - sendClientStartTime) + " milliseconds");
+
+        }else if (clientOperation.equals("receiving")) {
+            System.out.println("\n DEBUG : Client.run() - starting receive client thread " + objNetwork.getServerConnectionStatus());
+        	receiveClientStartTime = System.currentTimeMillis();
+        	Transactions transact = new Transactions();
+        	receiveTransactions(transact);
+        	receiveClientEndTime = System.currentTimeMillis();
+            System.out.println("\n Terminating Client Receive thread - " + " Running time " + (receiveClientEndTime - receiveClientStartTime) + " milliseconds");
+
+
+        }
+
     	/* Implement here the code for the run method ... */
     }
 }
