@@ -317,7 +317,6 @@ public class Server {
     	/* Implement the code for the run method */
 
         //Might need to add yield after defining!!!!
-
         processTransactions(trans);
 
         serverEndTime = System.currentTimeMillis();
