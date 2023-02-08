@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -307,15 +306,24 @@ public class Server {
      * @param
      */
     public void run()
-    {   Transactions trans = new Transactions();
-    	long serverStartTime, serverEndTime;
+    {   
+        Transactions trans = new Transactions();
+    	long serverStartTime;
+        long serverEndTime;
+
+        serverStartTime = System.currentTimeMillis();
 
     	System.out.println("\n DEBUG : Server.run() - starting server thread " + objNetwork.getServerConnectionStatus());
-    	
     	/* Implement the code for the run method */
-        
+
+        //Might need to add yield after defining!!!!
+
+        processTransactions(trans);
+
+        serverEndTime = System.currentTimeMillis();
         System.out.println("\n Terminating server thread - " + " Running time " + (serverEndTime - serverStartTime) + " milliseconds");
-           
     }
 }
+
+
 
