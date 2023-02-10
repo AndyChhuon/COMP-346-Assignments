@@ -553,11 +553,24 @@ public class Network extends Thread {
     public void run()
     {	
     	System.out.println("\n DEBUG : Network.run() - starting network thread");
+    	long networkStartTime;
+        long networkEndTime;
 
+        networkStartTime = System.currentTimeMillis();
     	
-//    	while (true)
-//    	{
-//		/* Implement here the code for the run method ... */
-//    	}    
+    	
+    	while (true)
+    	{
+    		if(clientConnectionStatus == "disconnected" && serverConnectionStatus == "disconnected") {
+    			
+    			break;
+    		}else {
+    			Thread.yield();
+    		}
+		/* Implement here the code for the run method ... */
+    	}
+    	networkEndTime = System.currentTimeMillis();
+        System.out.println("\n Terminating Network thread - " + " Running time " + (networkEndTime - networkStartTime) + " milliseconds");
+
     }
 }
