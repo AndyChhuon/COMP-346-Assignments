@@ -234,7 +234,6 @@ public class Server extends Thread{
         				 } 
         		        		 
         		 while( (objNetwork.getOutBufferStatus().equals("full") && !objNetwork.getClientConnectionStatus().equals("disconnected"))) {
-            		 System.out.print("aaaaaa empty");
 
         			 Thread.yield();
         		 }; /* Alternatively,  busy-wait until the network output buffer is available */
