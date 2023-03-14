@@ -58,3 +58,7 @@ public class Driver {
         //The difference of total running time was 3ms. 
     }
 }
+//In phase 1, we had the following runtimes: 
+//  Client thread: 445ms
+//  Server1 thread: 505ms
+//  Server2 thread: 505ms
