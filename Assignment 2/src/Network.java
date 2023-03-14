@@ -367,7 +367,17 @@ public class Network extends Thread {
      */
         public static boolean send(Transactions inPacket)
         {
-        	
+       	    //Before sending, we need to see if we can get the buffer (buffer cannot be full) and the mutex
+            try
+            {
+                inComingMutex.acquire();
+                inComingBufferEmpty.acquire();
+            }
+            catch(Exception e)
+            {
+                System.out.println("INTERRUPTED"); 
+            }
+		
         		  inComingPacket[inputIndexClient].setAccountNumber(inPacket.getAccountNumber());
         		  inComingPacket[inputIndexClient].setOperationType(inPacket.getOperationType());
         		  inComingPacket[inputIndexClient].setTransactionAmount(inPacket.getTransactionAmount());
@@ -390,7 +400,9 @@ public class Network extends Thread {
         		  {
         			  setInBufferStatus("normal");
         		  }
-            
+            //Once we have reached here, the buffer is full!
+            inComingBufferFull.release();      
+            inComingMutex.release();
             return true;
         }   
          
@@ -401,6 +413,15 @@ public class Network extends Thread {
      */
          public static boolean receive(Transactions outPacket)
         {
+	    try
+            {
+                outGoingMutex.acquire();
+                outGoingBufferFull.acquire();
+            }
+            catch(Exception e)
+            {
+                System.out.println("INTERRUPTED"); 
+            }
 
         		 outPacket.setAccountNumber(outGoingPacket[outputIndexClient].getAccountNumber());
         		 outPacket.setOperationType(outGoingPacket[outputIndexClient].getOperationType());
@@ -424,8 +445,10 @@ public class Network extends Thread {
         		 {
         			 setOutBufferStatus("normal"); 
         		 }
-        	            
-             return true;
+            //Once we have reached here, the buffer is empty. 
+            outGoingBufferEmpty.release();
+            outGoingMutex.release();
+            return true;            
         }   
          
     
