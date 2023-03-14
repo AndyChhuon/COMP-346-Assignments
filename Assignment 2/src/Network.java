@@ -24,6 +24,20 @@ public class Network extends Thread {
     private static Transactions outGoingPacket[];              /* Outgoing network buffer */
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
     private static String networkStatus;                       /* Network status - active, inactive */
+	
+    //Our semaphores
+    //We have two mutex, one for outgoing and one for incoming
+    private static Semaphore outGoingMutex = new Semaphore(1);
+    private static Semaphore inComingMutex = new Semaphore(1);
+
+    //For outgoing, when the buffer is empty, there is space equal to the maximum number of packets that the buffer can hold 
+    private static Semaphore outGoingBufferEmpty = new Semaphore(maxNbPackets);
+    //For outgoing, when the buffer is full, we have no more space, therefore we initialize our semaphore to zero
+    private static Semaphore outGoingBufferFull = new Semaphore(0);
+
+    //Similar to outgoing semaphores
+    private static Semaphore inComingBufferEmpty = new Semaphore(maxNbPackets);
+    private static Semaphore inComingBufferFull = new Semaphore(0);
        
     /** 
      * Constructor of the Network class
