@@ -375,9 +375,12 @@ public class Network extends Thread{
         {
             //Before sending, we need to see if we can get the buffer (buffer cannot be full) and the mutex
             try
-            {
+            {    
                 inComingMutex.acquire();
+		System.out.println("Log: Incoming mutex acquired!");
+		    
                 inComingBufferEmpty.acquire();
+		System.out.println("Log: Incoming buffer acquired!");
             }
             catch(Exception e)
             {
@@ -407,8 +410,10 @@ public class Network extends Thread{
         			  setInBufferStatus("normal");
         		  }
             //Once we have reached here, the buffer is full!
-            inComingBufferFull.release();      
+            inComingBufferFull.release();
+	    System.out.println("Log: inComingBufferFull released");		
             inComingMutex.release();
+	    System.out.println("Log: incoming Mutex released");		
             return true;
         }   
          
