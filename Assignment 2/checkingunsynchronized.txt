@@ -1,0 +1,40 @@
+
+ Activating the network ...
+
+ DEBUG : Network.run() - starting network thread
+
+ Initializing the server ...
+
+ Inializing the Accounts database ...
+
+ Connecting server to network ...
+
+ Initializing client sending application ...
+
+ Initializing the transactions ... 
+
+ DEBUG : Client.readTransactions() - 71 transactions processed
+
+ Connecting client to network ...
+
+ Initializing client receiving application ...
+
+ DEBUG : Client.run() - starting send client thread connected
+
+ DEBUG : Client.run() - starting receive client thread connected
+
+ DEBUG : Server.deposit - i 0 Current balance 10.0 Amount 90.0 Thread1
+
+ DEBUG : Server.withdraw - i 1 Current balance 1000.0 Amount 500.0 Thread1
+
+ DEBUG : Server.withdraw - i 2 Current balance 28000.0 Amount 20000.0 Thread1
+
+ Account number 31718 Account Balance 100.0 Message done
+
+ DEBUG : Server.deposit - i 3 Current balance 120000.0 Amount 20000.0 Thread1
+
+ Account number 11528 Account Balance 500.0 Message done
+
+ Account number 16783 Account Balance 8000.0 Message done
+
+ Account number 10538 Account Balance 140000.0 Message done

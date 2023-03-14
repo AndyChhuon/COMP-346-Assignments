@@ -27,19 +27,19 @@ public class Driver {
     	  * TODO : implement all the operations of main class   																					*
     	  ******************************************************************************************************************************************/
         //Outputs directed to a .txt file (Once for size 10 and once for size 20)
-        try
-        {
-            PrintStream myOutputs = new PrintStream("checkingunsynchronized.txt");
-            System.setOut(myOutputs);
-        }
-        catch(FileNotFoundException exception)
-        {
-            System.out.println("Failed to find the file!");
-            System.exit(0);
-        }
+//        try
+//        {
+//            PrintStream myOutputs = new PrintStream("checkingunsynchronized.txt");
+//            System.setOut(myOutputs);
+//        }
+//        catch(FileNotFoundException exception)
+//        {
+//            System.out.println("Failed to find the file!");
+//            System.exit(0);
+//        }
 
 
-    	Network objNetwork = new Network("network");            /* Activate the network */
+    	Network objNetwork = new Network( );            /* Activate the network */
         objNetwork.start();
         
         //We have 2 servers now as Thread1 and Thread2
