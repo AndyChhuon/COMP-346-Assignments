@@ -43,7 +43,7 @@ public class Driver {
     	Network objNetwork = new Network( );            /* Activate the network */
         objNetwork.start();
         
-        //We have 2 servers now as Thread1 and Thread2
+        //We have 3 servers now as Thread1, Thread2, Thread3. Effectively performs better than 2 servers.
         Server objServer1 = new Server("Thread1");
         Server objServer2 = new Server("Thread2");
         Server objServer3 = new Server("Thread3");
