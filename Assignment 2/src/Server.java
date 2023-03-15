@@ -27,6 +27,8 @@ public class Server extends Thread {
 	private String serverThreadId;				 /* Identification of the two server threads - Thread1, Thread2 */
 	private static String serverThreadRunningStatus1;	 /* Running status of thread 1 - idle, running, terminated */
 	private static String serverThreadRunningStatus2;	 /* Running status of thread 2 - idle, running, terminated */
+	private static String serverThreadRunningStatus3;	 /* Running status of thread 3 - idle, running, terminated */
+
   
     /** 
      * Constructor method of Client class
@@ -54,10 +56,13 @@ public class Server extends Thread {
     			System.exit(0);
     		}
     	}
-    	else
+    	else if(stid == "Thread2")
     	{
     		serverThreadId = stid;							/* unshared variable so each thread has its own copy */
     		serverThreadRunningStatus2 = "idle";				
+    	}else {
+    		serverThreadId = stid;							/* unshared variable so each thread has its own copy */
+    		serverThreadRunningStatus3 = "idle";	
     	}
     }
   
@@ -181,6 +186,17 @@ public class Server extends Thread {
          {
              return serverThreadRunningStatus2;
          }
+         
+         /** 
+          * Accessor method of Server class
+          * 
+          * @return serverThreadRunningStatus3
+          * @param
+          */
+          public String getServerThreadRunningStatus3()
+          {
+              return serverThreadRunningStatus2;
+          }
              
         /** 
          * Mutator method of Server class
@@ -192,6 +208,17 @@ public class Server extends Thread {
          { 
        	  serverThreadRunningStatus2 = runningStatus;
          }
+         
+         /** 
+          * Mutator method of Server class
+          * 
+          * @return 
+          * @param runningStatus
+          */
+          public void setServerThreadRunningStatus3(String runningStatus)
+          { 
+        	  serverThreadRunningStatus3 = runningStatus;
+          }
          
     /** 
      * Initialization of the accounts from an input file
@@ -313,7 +340,7 @@ public class Server extends Thread {
         		 
     			 trans.setTransactionStatus("done");
 
-        		
+
         		 /* System.out.println("\n DEBUG : Server.processTransactions() - transferring out account " + trans.getAccountNumber()); */
         		 
         		 Network.transferOut(trans);                            		/* Transfer a completed transaction from the server to the network output buffer */
@@ -446,8 +473,15 @@ public class Server extends Thread {
             System.out.println("\n Terminating server thread2");
 
         }
+        
+        if(getServerThreadId().equals("Thread3"))
+        {
+            setServerThreadRunningStatus3("terminated");
+            System.out.println("\n Terminating server thread3");
 
-        if((getServerThreadRunningStatus1().equals("terminated")) && (getServerThreadRunningStatus2().equals("terminated")))
+        }
+
+        if((getServerThreadRunningStatus1().equals("terminated")) && (getServerThreadRunningStatus2().equals("terminated")) && (getServerThreadRunningStatus3().equals("terminated")))
         {
             Network.disconnect(Network.getServerIP());
         }
