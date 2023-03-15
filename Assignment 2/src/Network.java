@@ -25,19 +25,18 @@ public class Network extends Thread{
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
     private static String networkStatus;                       /* Network status - active, inactive */
 
-    //Our semaphores
-    //We have two mutex, one for outgoing and one for incoming
-    private static Semaphore outGoingMutex = new Semaphore(1);
-    private static Semaphore inComingMutex = new Semaphore(1);
 
-    //For outgoing, when the buffer is empty, there is space equal to the maximum number of packets that the buffer can hold 
-    private static Semaphore outGoingBufferEmpty = new Semaphore(maxNbPackets);
-    //For outgoing, when the buffer is full, we have no more space, therefore we initialize our semaphore to zero
-    private static Semaphore outGoingBufferFull = new Semaphore(0);
 
-    //Similar to outgoing semaphores 
-    private static Semaphore inComingBufferEmpty = new Semaphore(maxNbPackets);
-    private static Semaphore inComingBufferFull = new Semaphore(0); 
+    //Make sure that the out buffer is not empty
+    private static Semaphore outGoingBufferEmptyCheck;
+    //Make sure that the out buffer is not full
+    private static Semaphore outGoingBufferFullCheck;
+
+
+    //Make sure that the in buffer is not full
+    private static Semaphore inComingBufferEmptyCheck;
+    //Make sure that the in buffer is not empty
+    private static Semaphore inComingBufferFullCheck;
 
     //We will use these semaphores in the following methods: send(), receive(), transferIn() and transferOut()
 
@@ -70,6 +69,11 @@ public class Network extends Thread{
          inputIndexServer = 0;
          outputIndexServer = 0;
          outputIndexClient = 0;
+         outGoingBufferEmptyCheck = new Semaphore(0);
+         outGoingBufferFullCheck = new Semaphore(maxNbPackets);
+         inComingBufferEmptyCheck = new Semaphore(0);
+         inComingBufferFullCheck = new Semaphore(maxNbPackets);
+
                 
          networkStatus = "active";
       }     
@@ -373,14 +377,12 @@ public class Network extends Thread{
 
         public static boolean send(Transactions inPacket)
         {
-            //Before sending, we need to see if we can get the buffer (buffer cannot be full) and the mutex
             try
             {    
-                inComingMutex.acquire();
-		System.out.println("Log: Incoming mutex acquired!");
-		    
-                inComingBufferEmpty.acquire();
-		System.out.println("Log: Incoming buffer acquired!");
+                //Make sure the incoming buffer is not full
+                inComingBufferFullCheck.acquire();
+
+
             }
             catch(Exception e)
             {
@@ -409,11 +411,10 @@ public class Network extends Thread{
         		  {
         			  setInBufferStatus("normal");
         		  }
-            //Once we have reached here, the buffer is full!
-            inComingBufferFull.release();
-	    System.out.println("Log: inComingBufferFull released");		
-            inComingMutex.release();
-	    System.out.println("Log: incoming Mutex released");		
+
+                //We added a packet to the incoming buffer, so increase by one
+                inComingBufferEmptyCheck.release();
+	
             return true;
         }   
          
@@ -426,8 +427,8 @@ public class Network extends Thread{
         {
             try
             {
-                outGoingMutex.acquire();
-                outGoingBufferFull.acquire();
+                //Make sure the outgoing buffer is not empty
+                outGoingBufferEmptyCheck.acquire();
             }
             catch(Exception e)
             {
@@ -457,9 +458,8 @@ public class Network extends Thread{
         			 setOutBufferStatus("normal"); 
         		 }
         	 
-            //Once we have reached here, the buffer is empty. 
-            outGoingBufferEmpty.release();
-            outGoingMutex.release();
+            //Add one because we removed a transaction from the outgoing buffer
+            outGoingBufferFullCheck.release();
             return true;
         }   
          
@@ -475,8 +475,8 @@ public class Network extends Thread{
         {
             try
             {
-                outGoingMutex.acquire();
-                outGoingBufferEmpty.acquire();
+                //Make sure the outgoing buffer is not full
+                outGoingBufferFullCheck.acquire();
             }
             catch(Exception e)
             {
@@ -506,9 +506,9 @@ public class Network extends Thread{
         			setOutBufferStatus("normal");
         		}
         	 
-            //At the end of our transfer, the outgoing buffer is full 
-             outGoingBufferFull.release();
-             outGoingMutex.release();   
+            //Add one because we added a transaction to the outgoing buffer
+             outGoingBufferEmptyCheck.release();
+
              return true;
         }   
          
@@ -522,8 +522,8 @@ public class Network extends Thread{
         {
             try
             {
-                inComingMutex.acquire();
-                inComingBufferEmpty.acquire();
+                //Make sure the incoming buffer is not empty
+                inComingBufferEmptyCheck.acquire();
             }
             catch(Exception e)
             {
@@ -553,8 +553,9 @@ public class Network extends Thread{
     		    	 setInBufferStatus("normal");
     		     }
 
-            inComingBufferEmpty.release();
-            inComingMutex.release();
+            //Add one because we freed up a transaction in the incoming buffer
+             inComingBufferFullCheck.release();
+
             return true;
         }   
          
