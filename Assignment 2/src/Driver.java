@@ -43,7 +43,7 @@ public class Driver {
     	Network objNetwork = new Network( );            /* Activate the network */
         objNetwork.start();
         
-        //We have 3 servers now as Thread1, Thread2, Thread3. Effectively performs better than 2 servers (501 milliseconds vs 354 milliseconds).
+        //We have 3 servers now as Thread1, Thread2, Thread3. 3 Server threads effectively performs better than 2 servers (Maximums of 501 milliseconds vs 354 milliseconds).
         Server objServer1 = new Server("Thread1");
         Server objServer2 = new Server("Thread2");
         Server objServer3 = new Server("Thread3");
@@ -59,11 +59,20 @@ public class Driver {
 
         /* Complete here the code for the main method ...*/
 
-        //After running the main method with two different buffers, we did not notice any significant changes. 
-        //The difference of total running time was 3ms. 
+        //After running the main method with two and three servers, we can see that the total running time of the program is faster with three servers.
+        //The difference of total running time was 147 milliseconds.
     }
 }
-//In phase 1, we had the following runtimes: 
-//  Client thread: 445ms
-//  Server1 thread: 505ms
-//  Server2 thread: 505ms
+//With two servers, we had the following runtimes: 
+//  Client thread: 336ms
+//  Server1 thread: 358ms
+//  Server2 thread: 358ms
+//  Network thread: 501ms
+
+//With three servers, we had the following runtimes:
+//  Client thread: 227ms
+//  Server1 thread: 241ms
+//  Server2 thread: 241ms
+//  Server3 thread: 240ms
+//  Network thread: 354ms
+
