@@ -1,3 +1,5 @@
+import java.util.concurrent.*;
+
 /**
  * Class Monitor
  * To synchronize dining philosophers.
@@ -15,6 +17,9 @@ public class Monitor
 	private int numberOfPhilosophers;
 	private enum status {eating, hungry, thinking}; 
 	private status[] states;  
+	private static Semaphore talkMutex = new Semaphore(1);
+
+
 
 
 	/**
@@ -40,7 +45,8 @@ public class Monitor
 	//
 	public void test(int i)
 	{
-		if((states[(i-1) % numberOfPhilosophers ] != status.hungry) && (states[(i+1) % numberOfPhilosophers ] != status.eating)
+		//Check left (Nb added in the case where i-1 is negative) then right
+		if((states[(i-1+numberOfPhilosophers) % numberOfPhilosophers ] != status.hungry) && (states[(i+1) % numberOfPhilosophers ] != status.eating)
 			&& (states[i] == status.hungry))
 		{
 			states[i] = status.eating;
@@ -54,12 +60,13 @@ public class Monitor
 	 */
 	public synchronized void pickUp(final int piTID)
 	{
+		int index = piTID-1; //index of the philosopher in the array since the philosopher's id starts at 1  
 		try
 		{
-			states[piTID] = status.hungry;
-			test(piTID);
+			states[index] = status.hungry;
+			test(index);
 
-			if(states[piTID] != status.eating)
+			if(states[index] != status.eating)
 			{
 				wait();
 			}
@@ -76,9 +83,11 @@ public class Monitor
 	 */
 	public synchronized void putDown(final int piTID)
 	{
-		states[piTID] = status.thinking;
-		test((piTID - 1)% numberOfPhilosophers); 
-		test((piTID + 1)% numberOfPhilosophers);
+		int index = piTID-1; //index of the philosopher in the array since the philosopher's id starts at 1  
+
+		states[index] = status.thinking;
+		test((index - 1 +numberOfPhilosophers)% numberOfPhilosophers); 
+		test((index + 1)% numberOfPhilosophers);
 	}
 
 	/**
@@ -88,6 +97,16 @@ public class Monitor
 	public synchronized void requestTalk()
 	{
 		// ...
+		//check mutex, wait if cant take
+		try
+		{
+			talkMutex.acquire();
+		}
+		catch(Exception e)
+		{
+			System.out.println("INTERRUPTED"); 
+		}
+
 	}
 
 	/**
@@ -97,6 +116,9 @@ public class Monitor
 	public synchronized void endTalk()
 	{
 		// ...
+		//release mutex
+        talkMutex.release();
+        notifyAll();
 	}
 }
 

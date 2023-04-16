@@ -200,7 +200,7 @@ public class BaseThread extends Thread
 		int iNumYields = (int)((new Random()).nextFloat() * 35) + 5;
 
 		for(int i = 0; i < iNumYields; i++)
-			yield();
+			Thread.yield();
 	}
 }
 

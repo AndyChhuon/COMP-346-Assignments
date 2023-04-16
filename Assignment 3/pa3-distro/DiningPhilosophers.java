@@ -1,4 +1,7 @@
- /**
+import java.io.FileNotFoundException;
+import java.io.PrintStream; 
+
+/**
  * Class DiningPhilosophers
  * The main starter.
  *
@@ -37,16 +40,47 @@ public class DiningPhilosophers
 	/**
 	 * Main system starts up right here
 	 */
-	public static void main(String[] argv)
+	public static void main(String[] args)
 	{
 		try
 		{
+			
 			/*
 			 * TODO:
 			 * Should be settable from the command line
 			 * or the default if no arguments supplied.
 			 */
 			int iPhilosophers = DEFAULT_NUMBER_OF_PHILOSOPHERS;
+			
+			//Get nb of philosophers from command line
+			if(args.length>0) {
+				try {
+					iPhilosophers = Integer.parseInt(args[0]);
+					if(iPhilosophers<1) {
+			            throw new IllegalArgumentException("Age cannot be negative.");
+					}
+
+				}catch(NumberFormatException e)
+		        {
+		            System.out.println(args[0]+" is not a number.");
+		            System.exit(1);
+		        }catch(IllegalArgumentException e) {
+		            System.out.println(args[0]+" is a negative number.");
+		            System.exit(1);
+		        }
+			}
+			System.out.print("Running with "+iPhilosophers+" philosophers.");
+			//Set output to stream into txt file
+	        try
+	        {
+	            PrintStream myOutputs = new PrintStream(iPhilosophers+"Philosophers.txt");
+	            System.setOut(myOutputs);
+	        }
+	        catch(FileNotFoundException exception)
+	        {
+	            System.out.println("Failed to find the file!");
+	            System.exit(0);
+	        }
 
 			// Make the monitor aware of how many philosophers there are
 			soMonitor = new Monitor(iPhilosophers);
