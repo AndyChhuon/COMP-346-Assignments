@@ -1,4 +1,4 @@
-import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class Monitor
@@ -17,7 +17,7 @@ public class Monitor
 	private int numberOfPhilosophers;
 	private enum status {eating, hungry, thinking}; 
 	private status[] states;  
-	private static Semaphore talkMutex = new Semaphore(1);
+	private final AtomicBoolean talkMutex = new AtomicBoolean(false);
 
 
 
@@ -100,7 +100,12 @@ public class Monitor
 		//check mutex, wait if cant take
 		try
 		{
-			talkMutex.acquire();
+			if (talkMutex.compareAndSet(false, true)) {
+				
+			} else {
+			    // lock not available
+			    wait();
+			}
 		}
 		catch(Exception e)
 		{
@@ -117,7 +122,7 @@ public class Monitor
 	{
 		// ...
 		//release mutex
-        talkMutex.release();
+        talkMutex.set(false);
         notifyAll();
 	}
 }
